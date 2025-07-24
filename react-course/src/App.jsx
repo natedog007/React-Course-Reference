@@ -21,13 +21,16 @@ function App() {
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   
-  const fetchMovies = async () => {
+  const fetchMovies = async (query = '') => {
 
     setIsLoading(true);
     setErrorMessage('');
 
     try{
-      const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+      const endpoint = 
+      query ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}` 
+      : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+      
       const response = await fetch(endpoint, API_OPTIONS);
   
       if(!response.ok){
@@ -58,37 +61,37 @@ function App() {
 
 
   useEffect(() => {
-    fetchMovies();
-  }, [])
+    fetchMovies(searchTerm);
+  }, [searchTerm])
 
   return (
     <main>
       <div className="pattern"/>
+        <div className="wrapper">
+          <header>
+            <img src="./hero.png" />
+            <h1>Find <span className="text-gradient">Movies</span> You'll Enjoy Without the Hassle</h1>
+            <Search searchTerm = {searchTerm} setSearchTerm = {setSearchTerm}/>
+          </header>
 
-      <div className="wrapper">
-        <header>
-          <img src="./hero.png" />
-          <h1>Find <span className="text-gradient">Movies</span> You'll Enjoy Without the Hassle</h1>
-          <Search searchTerm = {searchTerm} setSearchTerm = {setSearchTerm}/>
-        </header>
-
-        <section className="all-movies">
-          <h2 className="mt-[40px]">All Movies</h2>
+          <section className="all-movies">
+            <h2 className="mt-[40px]">All Movies</h2>
 
 
-          {isLoading ? (
-            <p className="text-white justify-center items-center flex"><Spinner/></p>
-          ) : errorMessage ? (
-            <p className="text-red-500">{errorMessage}</p>
-          ): (
-            <ul>
-              {movieList.map((movie) => (
-                <MovieCard key={movie.id} movie = {movie} />
-              ))}
-            </ul>
-          )}
-        </section>
+            {isLoading ? (
+              <p className="text-white justify-center items-center flex"><Spinner/></p>
+            ) : errorMessage ? (
+              <p className="text-red-500">{errorMessage}</p>
+            ): (
+              <ul>
+                {movieList.map((movie) => (
+                  <MovieCard key={movie.id} movie = {movie} />
+                ))}
+              </ul>
+            )}
+          </section>
       </div>
+
     </main>
 
 
